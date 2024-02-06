@@ -1,22 +1,28 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-#include <WiFiUdp.h>
-#include <ArduinoOTA.h>
-
+//************************************************************************//
+// DEFINES                                                                //
+//************************************************************************//
+#define OFF 0
+#define ON  1
+//************************************************************************//
+// VARIABLES                                                              //
+//************************************************************************//
+// WiFi AP features
 const char* ssid = "Sunrise_Wi-Fi_42F4FBF";
 const char* password = "w2ukrtFvzws4";
-
-//Blink LED pin
-int ledPin = 2;
-
-//To make Arduino software autodetect OTA device
-WiFiServer TelnetServer(8266);
-
+// SYSTEM LED
+int systemLedPin = 2;
+//************************************************************************//
+// FUNCTIONS PROTOTYPES                                                   //
+//************************************************************************//
+void systemLed();
+//************************************************************************//
+// MAIN                                                                   //
+//************************************************************************//
 void setup() {
-  //To make Arduino software autodetect OTA device
-  TelnetServer.begin();
-
+  // SERIAL CONSOLE INIT
   Serial.begin(115200);
+  // WIFI AP CONNECTION INIT
   Serial.println("Booting...");
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -25,46 +31,34 @@ void setup() {
     delay(5000);
     ESP.restart();
   }
-  // Port defaults to 8266
-  //ArduinoOTA.setPort(8266);
-  // Hostname defaults to esp8266-[ChipID]
-  //ArduinoOTA.setHostname("myesp8266");
-  // No authentication by default
-  //ArduinoOTA.setPassword((const char *)"xxxxx");
-
-  ArduinoOTA.onStart([]() {
-    Serial.println("OTA Start");
-  });
-  ArduinoOTA.onEnd([]() {
-    Serial.println("OTA End");
-    Serial.println("Rebooting...");
-  });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r\n", (progress / (total / 100)));
-  });
-  ArduinoOTA.onError([](ota_error_t error) {
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-    else if (error == OTA_END_ERROR) Serial.println("End Failed");
-  });
-  ArduinoOTA.begin();
   Serial.println("Ready");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-
-  //set LED pin as output
-  pinMode(ledPin, OUTPUT);
+  //SYSTEM LED INIT
+  pinMode(systemLedPin, OUTPUT);
 }
-
 void loop() {
-  ArduinoOTA.handle();
-
-  //Make LED blink
-  digitalWrite(ledPin, HIGH);
-  delay(250);
-  digitalWrite(ledPin, LOW);
-  delay(250);
+  systemLed();  // system Led blink
+}
+//************************************************************************//
+// FUNCTIONS                                                              //
+//************************************************************************//
+// make led system Led blink
+void systemLed(){
+  static unsigned char state = 0;
+  static int counter = 0;
+  delay(1);
+  if(counter <= 499){
+    counter ++;
+  }
+  else{
+    counter = 0;
+    state = state ^ 0x01; // change state 0 <--> 1
+  }
+  if(state == 0){
+    digitalWrite(systemLedPin, LOW);
+  }
+  else{
+    digitalWrite(systemLedPin, HIGH);
+  }
 }
