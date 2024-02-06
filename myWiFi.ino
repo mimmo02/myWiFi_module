@@ -3,8 +3,8 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-const char* ssid = "SSID_NAME";
-const char* password = "PASSWORD";
+const char* ssid = "Sunrise_Wi-Fi_42F4FBF";
+const char* password = "w2ukrtFvzws4";
 
 //Blink LED pin
 int ledPin = 2;
