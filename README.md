@@ -14,6 +14,8 @@ Appropriate to develope IoT application.
 
 The IO are customizable, in this case the configuration is made such as there are 6 output and 3 input.
 
+![alt text](https://github.com/mimmo02/myWiFi_module/blob/main/Layout.png?raw=true)
+
 #### Mounted components:
 
 
