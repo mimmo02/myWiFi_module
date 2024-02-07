@@ -2,6 +2,16 @@
 //************************************************************************//
 // DEFINES                                                                //
 //************************************************************************//
+#define SYSTEMLEDPIN 2
+#define GPIO00  0
+#define GPIO02  2
+#define GPIO04  4
+#define GPIO05  5
+#define GPIO12  12
+#define GPIO13  13
+#define GPIO14  14
+#define GPIO15  15
+#define GPIO16  16
 #define OFF 0
 #define ON  1
 //************************************************************************//
@@ -10,12 +20,11 @@
 // WiFi AP features
 const char* ssid = "Sunrise_Wi-Fi_42F4FBF";
 const char* password = "w2ukrtFvzws4";
-// SYSTEM LED
-int systemLedPin = 2;
 //************************************************************************//
 // FUNCTIONS PROTOTYPES                                                   //
 //************************************************************************//
 void systemLed();
+void GPIOInit();
 //************************************************************************//
 // MAIN                                                                   //
 //************************************************************************//
@@ -34,11 +43,26 @@ void setup() {
   Serial.println("Ready");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  //SYSTEM LED INIT
-  pinMode(systemLedPin, OUTPUT);
+  // GPIOs Init
+  GPIOInit();
 }
+
+
+unsigned char state12 = 0; 
+unsigned char state14 = 0;
+unsigned char state16 = 0;
+
 void loop() {
-  systemLed();  // system Led blink
+  //systemLed();  // system Led blink
+  state12 = digitalRead(GPIO12);
+  state14 = digitalRead(GPIO14);
+  state16 = digitalRead(GPIO16);
+  if(state12 != 0 || state14 != 0 || state16 != 0){
+    digitalWrite(SYSTEMLEDPIN, HIGH);
+  }
+  else{
+    systemLed();
+  }
 }
 //************************************************************************//
 // FUNCTIONS                                                              //
@@ -56,9 +80,19 @@ void systemLed(){
     state = state ^ 0x01; // change state 0 <--> 1
   }
   if(state == 0){
-    digitalWrite(systemLedPin, LOW);
+    digitalWrite(SYSTEMLEDPIN, LOW);
   }
   else{
-    digitalWrite(systemLedPin, HIGH);
+    digitalWrite(SYSTEMLEDPIN, HIGH);
   }
+}
+
+// Init all GPIOs
+void GPIOInit(){
+  //SYSTEM LED INIT
+  pinMode(SYSTEMLEDPIN, OUTPUT);
+  // GPIOs init
+  pinMode(GPIO12, INPUT);
+  pinMode(GPIO14, INPUT);
+  pinMode(GPIO16, INPUT);
 }
